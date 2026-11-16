@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "it.spicci.app",
+        "sha256_cert_fingerprints": ["73:7D:44:8E:12:B8:AF:58:19:45:AC:B0:23:62:58:2B:CB:CF:25:01:2B:D6:C9:FB:B7:85:66:D2:BF:83:98:80"]
+      }
+    }]
