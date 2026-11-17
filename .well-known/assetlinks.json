@@ -1,8 +1,11 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "it.spicci.app",
-        "sha256_cert_fingerprints": ["73:7D:44:8E:12:B8:AF:58:19:45:AC:B0:23:62:58:2B:CB:CF:25:01:2B:D6:C9:FB:B7:85:66:D2:BF:83:98:80"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "it.spicci.app",
+    "sha256_cert_fingerprints": [
+      "CA:93:D9:EE:A9:58:55:D2:68:C7:B5:D6:86:59:1C:A9:17:33:D8:0E:F0:87:12:93:ED:E1:49:57:D3:1B:3C:D2",
+      "73:7D:44:8E:12:B8:AF:58:19:45:AC:B0:23:62:58:2B:CB:CF:25:01:2B:D6:C9:FB:B7:85:66:D2:BF:83:98:80"
+    ]
+  }
+}]
