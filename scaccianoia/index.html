@@ -1860,8 +1860,8 @@ h2 + .cam{margin-top:12px}
       // stessa scelta dello strumento del biglietto: il punto più alto che si raggiunge nel tempo a disposizione
       var rel = ctx.reliefAt ? ctx.reliefAt(metaTime(ctx.reliefTime != null ? ctx.reliefTime : ctx.time, a.min, a.max)) : ctx.relief;
       if (rel) {
-        if (rel.flat) return null;   // in pianura non lo propongo: resta nel catalogo, e aprendolo porta alla vista più aperta
-        if (rel.best.gain >= 30) { s += 10; extra.push("Punto più alto: circa " + roundGain(rel.best.gain) + " metri più su"); }
+        if (rel.flat) { if (!ctx.keepFlat) return null; }   // in pianura non lo propongo: resta nel catalogo, e aprendolo porta alla vista più aperta
+        else if (rel.best.gain >= 30) { s += 10; extra.push("Punto più alto: circa " + roundGain(rel.best.gain) + " metri più su"); }
       }
     }
     var seen = ctx.shown ? ctx.shown[a.id] : null;
@@ -2066,7 +2066,9 @@ h2 + .cam{margin-top:12px}
       if (T && tot > T) continue;
       if (!best || p.ele > best.ele || (p.ele === best.ele && p.d < best.d)) best = { lat: p.lat, lon: p.lon, d: p.d, b: p.b, ele: p.ele, gain: gain, min: tot };
     }
-    return { base: base, best: best, flat: !best || best.gain < 10, sea: sea ? { lat: sea.lat, lon: sea.lon, d: sea.d, b: sea.b } : null };
+    // pianura: meno di dieci metri di dislivello, oppure pochi metri spalmati su chilometri (sotto l'1,5% non si sente di salire)
+    var flat = !best || best.gain < 10 || (best.gain < 30 && best.gain / Math.max(1, best.d) < 0.015);
+    return { base: base, best: best, flat: flat, sea: sea ? { lat: sea.lat, lon: sea.lon, d: sea.d, b: sea.b } : null };
   }
   /* Una meta per il biglietto: il posto più vicino del tipo giusto che sta nel tempo a disposizione. */
   function placesFor(places, want, T) {
@@ -2611,7 +2613,7 @@ function context(extra) {
   return ctx;
 }
 function ranked(extra) { return C.rank(allActs(), context(extra)); }
-function fitNow(a) { var r = C.rank([a], context({ skipToday: null, time: 240, reliefTime: S.prefs.time || 0, who: null, where: 'x', energy: 0, kit: null, seated: false })); return r.length ? { ok: true, why: r[0].why } : { ok: false, why: [] }; }
+function fitNow(a) { var r = C.rank([a], context({ skipToday: null, time: 240, reliefTime: S.prefs.time || 0, keepFlat: true, who: null, where: 'x', energy: 0, kit: null, seated: false })); return r.length ? { ok: true, why: r[0].why } : { ok: false, why: [] }; }
 function bump(cat, d) { S.catW[cat] = Math.max(-6, Math.min(8, (S.catW[cat] || 0) + d)); }
 
 // ---------- biglietti ----------
@@ -4442,7 +4444,7 @@ TOOL.meta = {
         list = near.slice(0, 3);
         if (hp.sea) list.push(self.shore(hp));
         if (!list.length) list.push({ name: 'Il punto più alto qui intorno', lat: hp.best.lat, lon: hp.best.lon, d: hp.best.d, b: hp.best.b, gain: hp.best.gain, kind: 'La meta', desc: 'una salita vera qui non esiste: vale come passeggiata' });
-        return done(list, 'Qui intorno il terreno è quasi piatto: il punto più alto che raggiungi a piedi è appena ' + Math.max(0, Math.round(hp.best.gain)) + ' metri sopra di te.');
+        return done(list, 'Qui intorno il terreno è quasi piatto: il punto più alto che raggiungi a piedi è appena ' + Math.max(0, Math.round(hp.best.gain)) + ' metri sopra di te' + (hp.best.gain >= 5 && hp.best.d >= 400 ? ', a ' + C.fmtDist(hp.best.d) : '') + '.');
       }
       return self.refine(hp.best, T).then(function (best) { return self.nameIt(best, near); }).then(function (best) {
         var alt = self.second(T, best), out = [best].concat(alt ? [alt] : []), low = best.gain < 30;
