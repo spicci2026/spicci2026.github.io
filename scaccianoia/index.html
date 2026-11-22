@@ -84,7 +84,8 @@ body.has-sheet .view{overflow:hidden}
 .loc{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;max-width:58%;min-height:40px;padding:0 10px 0 12px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font-weight:700;font-size:14.5px}
 .loc span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .loc .ic{width:17px;height:17px;flex:none}
-@media (max-width:359px){.top{gap:8px}.brand{font-size:20px;gap:7px}.logo{width:28px;height:28px}.loc{padding:0 9px 0 10px;font-size:13.5px}.loc .ic:last-child{display:none}}
+@media (max-width:400px){.brand{font-size:22px}.loc{padding-right:12px}.loc .ic:last-child{display:none}}
+@media (max-width:359px){.top{gap:8px}.brand{font-size:20px;gap:7px}.top .logo{width:28px;height:28px}.loc{padding:0 9px 0 10px;font-size:13.5px}}
 .foot{margin-top:30px;font-size:12.5px;color:var(--ink-3);max-width:70ch}
 .foot a{color:inherit}
 .page{max-width:1000px}
@@ -382,7 +383,7 @@ textarea.in{resize:vertical;line-height:1.4}
 .radar svg{display:block;width:100%;max-width:380px;margin:0 auto;overflow:visible}
 .radar figcaption{margin-top:8px;font-size:13px;color:var(--ink-3);text-align:center}
 .rg{fill:none;stroke:var(--line);stroke-width:1}
-.rg-t{font:500 11px var(--f-b);fill:var(--ink-3)}
+.rg-t{font:600 11px var(--f-b);fill:var(--ink-2);paint-order:stroke;stroke:var(--card);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
 .rg-n{font:700 12px var(--f-b);fill:var(--ink-2)}
 .mk{cursor:pointer;outline:0}
 .mk > circle{fill:var(--ink-3);opacity:.5;stroke:var(--card);stroke-width:2}
@@ -750,6 +751,35 @@ h2 + .cam{margin-top:12px}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
 
+/* ---------- installare l'app ---------- */
+.getapp{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4px 12px;margin-bottom:14px;padding:12px 46px 12px 12px;border-radius:16px;background:var(--card)}
+.getapp .logo{width:42px;height:42px}
+.getapp-t{display:grid;min-width:0;line-height:1.25}
+.getapp-t b{font-size:15.5px}
+.getapp-t span{font-size:13.5px;color:var(--ink-2)}
+.getapp-x{position:absolute;top:3px;right:3px;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:none;color:var(--ink-3)}
+.getapp-x:hover{color:var(--ink);background:var(--sunk)}
+@media (max-width:460px){.getapp{grid-template-columns:auto minmax(0,1fr)}.getapp > .btn{grid-column:2;justify-self:start;margin-top:6px}}
+.inst-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding-right:44px}
+.inst-top .logo{width:56px;height:56px}
+.inst-top p{margin:5px 0 0;color:var(--ink-2);font-size:15px;line-height:1.35}
+.inst-steps{list-style:none;counter-reset:passo;margin:18px 0 4px;padding:0;display:grid;gap:12px}
+.inst-steps li{counter-increment:passo;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center}
+.inst-ic{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:var(--ticket);color:var(--ticket-ink)}
+.inst-ic .ic{width:22px;height:22px}
+.inst-steps p{margin:0;display:grid;line-height:1.3}
+.inst-steps b::before{content:counter(passo) ". "}
+.inst-steps p span{font-size:14px;color:var(--ink-2)}
+.inst-go{margin-top:16px}
+.inst-go + .small{margin-top:10px}
+.inst-qr{display:grid;grid-template-columns:minmax(0,176px) minmax(0,1fr);gap:16px;align-items:center;margin-top:16px}
+.inst-qr p{margin:0;font-size:15px;line-height:1.4;color:var(--ink-2)}
+.qr{display:block;width:100%;height:auto;border-radius:12px;background:#FFFFFF}
+@media (max-width:420px){.inst-qr{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.inst-qr .qr{max-width:200px}}
+.inst-addr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:14px 0 0;padding:10px 12px;border-radius:12px;background:var(--sunk)}
+.inst-addr span{flex:1 1 250px;min-width:0;font:600 14.5px/1.3 var(--f-m);overflow-wrap:anywhere}
+.sheet--inst .sub-h{margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+
 </style>
 </head>
 <body>
@@ -1081,9 +1111,42 @@ h2 + .cam{margin-top:12px}
     ['Vercelli', 45.32, 8.42], ['Verona', 45.44, 10.99], ['Vibo Valentia', 38.68, 16.10], ['Vicenza', 45.55, 11.54], ['Viterbo', 42.42, 12.11]];
   var QUICK_CITIES = ['Roma', 'Milano', 'Napoli', 'Torino', 'Palermo', 'Bologna', 'Firenze', 'Bari'];
 
+  /* Dove vive l'app e il codice QR del suo indirizzo (versione 3, correzione M: 29 moduli per lato, 1 = scuro).
+     Se l'indirizzo cambia, il codice va rigenerato con tests/qr.py. */
+  var APP = { url: 'https://spicci2026.github.io/scaccianoia/', hosts: { 'it.spicci.app': 'Spicci' }, qr: [
+    '11111110001011001111101111111',
+    '10000010010111111010001000001',
+    '10111010111000010010101011101',
+    '10111010110001110100101011101',
+    '10111010100111001001101011101',
+    '10000010111011111000101000001',
+    '11111110101010101010101111111',
+    '00000000111000110000000000000',
+    '10111110010111100101001111100',
+    '00010101111011001011111110001',
+    '01000010001100011110110100000',
+    '11000000111110100011101011010',
+    '01010110010011110110000001100',
+    '11011101011010001111111110001',
+    '10100111001100011100011111100',
+    '10100100100000100011100000010',
+    '01000111100011010101010001100',
+    '11011001001111001111001110101',
+    '10111110111111111010010010100',
+    '10000100111100110001111010010',
+    '11110110101010010100111110111',
+    '00000000100111001111100011111',
+    '11111110001111111101101011100',
+    '10000010111111000000100010000',
+    '10111010110100110110111110111',
+    '10111010111110001110110101111',
+    '10111010110101111100001111110',
+    '10000010011011100001110101010',
+    '11111110101110111100010011100'] };
+
   var DATA = { CATS: CATS, CAT_ORDER: CAT_ORDER, KIT: KIT, KIT_ORDER: KIT_ORDER, KIT_DEFAULT: KIT_DEFAULT, ACTS: ACTS, PLACES: PLACES, PLACE_ORDER: PLACE_ORDER,
     PLACE_CAP: PLACE_CAP, MAP_SEARCH: MAP_SEARCH, BADGES: BADGES, LEVELS: LEVELS, BINGO: BINGO, WALK_STEPS: WALK_STEPS, WALK_MISSIONS: WALK_MISSIONS,
-    RIDDLES: RIDDLES, SKILLS: SKILLS, DEMO_POSTS: DEMO_POSTS, SKY_DATES: SKY_DATES, SKY: SKY, WX_MANUAL: WX_MANUAL, NORMALS: NORMALS, CITIES: CITIES, QUICK_CITIES: QUICK_CITIES };
+    RIDDLES: RIDDLES, SKILLS: SKILLS, DEMO_POSTS: DEMO_POSTS, SKY_DATES: SKY_DATES, SKY: SKY, WX_MANUAL: WX_MANUAL, NORMALS: NORMALS, CITIES: CITIES, QUICK_CITIES: QUICK_CITIES, APP: APP };
   root.SN_DATA = DATA;
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -2077,6 +2140,44 @@ h2 + .cam{margin-top:12px}
     return { list: (ok.length ? ok : list).slice(0, 4), far: !ok.length && list.length > 0 };
   }
 
+  // ---------- installare l'app ----------
+  /* Come si mette l'app sul dispositivo dipende da dove sta girando. Qui si decide da dati semplici, così si può provare:
+     box   anteprima protetta: si può solo indicare l'indirizzo
+     in    già installata (o aperta dentro la sua app)
+     host  aperta dentro un'altra app Android dello stesso sito: va riaperta nel browser
+     ask   il browser offre l'installazione con un tasto
+     ios / and        il browser la installa dal suo menu
+     ios-app / and-app   pagina aperta dentro un'altra app (social, chat): prima va aperta nel browser
+     desk  computer senza installazione offerta: codice da inquadrare con il telefono */
+  function installKind(e) {
+    e = e || {};
+    var ua = e.ua || '', ref = e.referrer || '', hosts = e.hosts || {};
+    var pkg = ref.indexOf('android-app://') === 0 ? ref.slice(14).replace(/[\/?#].*$/, '') : '';
+    var ios = /iPad|iPhone|iPod/.test(ua) || (e.platform === 'MacIntel' && e.touch > 1);
+    var android = /Android/.test(ua);
+    var inapp = /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|musical_ly|Snapchat|LinkedInApp|Pinterest|GSA\//.test(ua) || (android && /; wv\)/.test(ua));
+    if (e.boxed) return { k: 'box' };
+    if (pkg) return hosts[pkg] ? { k: 'host', app: hosts[pkg], phone: true } : { k: 'in', phone: true };
+    if (e.standalone) return { k: 'in', phone: ios || android };
+    if (e.prompt) return { k: 'ask', phone: ios || android };
+    if (ios) return { k: inapp ? 'ios-app' : 'ios', phone: true };
+    if (android) return { k: inapp ? 'and-app' : 'and', phone: true, firefox: /Firefox/.test(ua), samsung: /SamsungBrowser/.test(ua) };
+    return { k: 'desk', phone: false, safari: /Safari/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua), firefox: /Firefox/.test(ua) };
+  }
+  /* Il disegno del codice QR: un solo tracciato, una riga alla volta, con i moduli scuri uniti in strisce. */
+  function qrPath(rows) {
+    var d = '', y, x, r, w;
+    for (y = 0; y < rows.length; y++) {
+      r = rows[y];
+      for (x = 0; x < r.length; x++) {
+        if (r.charAt(x) !== '1') continue;
+        w = 1; while (x + w < r.length && r.charAt(x + w) === '1') w++;
+        d += 'M' + x + ' ' + y + 'h' + w + 'v1h-' + w + 'z'; x += w - 1;
+      }
+    }
+    return d;
+  }
+
   // ---------- progressi ----------
   function touchStreak(st, now) { var k = dayKey(now); if (st.last === k) return false; st.cur = (st.last === dayKey(addDays(now, -1))) ? (st.cur || 0) + 1 : 1; st.last = k; if (st.cur > (st.best || 0)) st.best = st.cur; return true; }
   function liveStreak(st, now) { return (st.last === dayKey(now) || st.last === dayKey(addDays(now, -1))) ? (st.cur || 0) : 0; }
@@ -2138,7 +2239,7 @@ h2 + .cam{margin-top:12px}
     norm: norm, searchCities: searchCities, sunTimes: sunTimes, moon: moon, wmo: wmo, wxIcon: wxIcon, flagsFrom: flagsFrom, buildLive: buildLive, buildManual: buildManual,
     headline: headline, advice: advice, skyTheme: skyTheme, rank: rank, pickDaily: pickDaily, nearestPlace: nearestPlace, overpassQuery: overpassQuery, parsePlaces: parsePlaces,
     relocate: relocate, parseNominatim: parseNominatim, parseWiki: parseWiki, mergePlaces: mergePlaces, sunPos: sunPos, dirName: dirName, offset: offset, ringGrid: ringGrid, boxGrid: boxGrid,
-    RINGS_NEAR: RINGS_NEAR, RINGS_FAR: RINGS_FAR, RING_PER: RING_PER, climbMin: climbMin, tripMin: tripMin, reachMeters: reachMeters, highPick: highPick, metaTime: metaTime, roundGain: roundGain, placesFor: placesFor, dayNum: dayNum,
+    RINGS_NEAR: RINGS_NEAR, RINGS_FAR: RINGS_FAR, RING_PER: RING_PER, climbMin: climbMin, tripMin: tripMin, reachMeters: reachMeters, highPick: highPick, metaTime: metaTime, roundGain: roundGain, placesFor: placesFor, dayNum: dayNum, installKind: installKind, qrPath: qrPath,
     touchStreak: touchStreak, liveStreak: liveStreak, level: level, stats: stats, earned: earned, events: events, meteorNear: meteorNear, isWetGroup: isWetGroup };
   root.SN_CORE = CORE;
   if (typeof module !== 'undefined' && module.exports) module.exports = CORE;
@@ -2174,7 +2275,7 @@ function defaults() {
     loc: null, wxManual: null, log: [], saved: [], skipped: { date: '', ids: {} }, catW: {}, xp: 0, badges: {},
     streak: { cur: 0, best: 0, last: '' }, daily: { date: '', id: '', done: false }, bingo: { month: '', marks: [] }, stamps: [],
     board: { posts: [], offers: [] }, counters: { helps: 0, posts: 0, bingo: 0, group: 0, walks: 0 }, custom: [], hidden: {},
-    shown: {}, dailyHist: [], notes: {}, rec: {}, birth: 0 };
+    shown: {}, dailyHist: [], notes: {}, rec: {}, birth: 0, inst: { hide: 0, done: 0 } };
 }
 function hydrate(o) {
   var d = defaults(); if (!o || typeof o !== 'object') return d;
@@ -2780,7 +2881,7 @@ function toolsPanel() {
     return '<li><button class="row" data-act="tool" data-tool="' + t[0] + '"><span class="row-ic">' + ic(t[1]) + '</span><span class="row-t"><b>' + t[2] + '</b><small>' + t[3] + '</small></span></button></li>'; }).join('') + '</ul></section>';
 }
 function topBar() {
-  return '<header class="top"><a class="brand" href="#oggi" data-route="oggi">' + LOGO + '<span>Scaccianoia</span></a><button class="loc" data-act="loc-open">' + ic('pin') + '<span>' + esc(S.loc ? S.loc.name : 'Scegli dove sei') + '</span>' + ic('chev') + '</button></header>';
+  return '<header class="top"><a class="brand" href="#oggi" data-route="oggi">' + LOGO + '<span>Scaccianoia</span></a><button class="loc" data-act="loc-open">' + ic('pin') + '<span>' + esc(S.loc ? S.loc.name : 'Dove sei?') + '</span>' + ic('chev') + '</button></header>';
 }
 function foot() {
   return '<footer class="foot"><p>Scaccianoia è un nome di lavoro. Meteo di <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0), luoghi di <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> e <a href="https://it.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>.' + '' + '</p></footer>';
@@ -2830,14 +2931,15 @@ function passport() {
 function radarBlock() {
   var P = UI.places, cats = D.PLACE_ORDER.filter(function (c) { return P.some(function (p) { return p.cat === c; }); });
   if (UI.near !== 'all' && cats.indexOf(UI.near) < 0) UI.near = 'all';
-  var far = P.length ? P[Math.min(P.length - 1, Math.floor(P.length * 0.9))].d : 0, R = [1500, 2500, 3600, 5000].filter(function (x) { return x >= far; })[0] || 5000, cx = 170, cy = 170, rad = 150, s = '', dim = [], hi = [];
-  [1 / 3, 2 / 3, 1].forEach(function (k) { s += '<circle class="rg" cx="' + cx + '" cy="' + cy + '" r="' + (rad * k).toFixed(0) + '"/><text class="rg-t" x="' + (cx + 5) + '" y="' + (cy - rad * k + 14).toFixed(0) + '">' + C.fmtDist(R * k) + '</text>'; });
+  var far = P.length ? P[Math.min(P.length - 1, Math.floor(P.length * 0.9))].d : 0, R = [1500, 2500, 3600, 5000].filter(function (x) { return x >= far; })[0] || 5000, cx = 170, cy = 170, rad = 150, s = '', lab = '', dim = [], hi = [];
+  // le distanze degli anelli si scrivono per ultime, sopra i segnaposto, così restano leggibili
+  [1 / 3, 2 / 3, 1].forEach(function (k) { s += '<circle class="rg" cx="' + cx + '" cy="' + cy + '" r="' + (rad * k).toFixed(0) + '"/>'; lab += '<text class="rg-t" x="' + (cx + 5) + '" y="' + (cy - rad * k + 14).toFixed(0) + '">' + C.fmtDist(R * k) + '</text>'; });
   s += '<path class="rg" d="M' + cx + ' ' + (cy - rad) + 'V' + (cy + rad) + 'M' + (cx - rad) + ' ' + cy + 'H' + (cx + rad) + '"/><text class="rg-n" x="' + cx + '" y="13" text-anchor="middle">N</text>';
   P.forEach(function (p) {
     var k = Math.min(1, p.d / R), a = p.b * Math.PI / 180, x = cx + Math.sin(a) * k * rad, y = cy - Math.cos(a) * k * rad, on = UI.near === 'all' || UI.near === p.cat, t = D.PLACES[p.cat];
     (on ? hi : dim).push('<g class="mk' + (on ? ' on' : '') + '" tabindex="0" role="button" data-act="place" data-id="' + esc(p.id) + '" data-tip="' + esc(p.name + ', ' + C.fmtDist(p.d)) + '" aria-label="' + esc(p.name + ', ' + t.label + ', ' + C.fmtDist(p.d)) + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><circle r="12"/><g transform="translate(-7.2 -7.2) scale(.6)">' + ICON[t.icon] + '</g></g>');
   });
-  s += dim.join('') + hi.join('') + '<circle class="you" cx="' + cx + '" cy="' + cy + '" r="6"/>';
+  s += dim.join('') + hi.join('') + lab + '<circle class="you" cx="' + cx + '" cy="' + cy + '" r="6"/>';
   var list = P.filter(function (p) { return UI.near === 'all' || p.cat === UI.near; });
   return '<div class="near-grid"><figure class="radar"><svg viewBox="0 0 340 340" role="group" aria-label="Radar dei posti gratuiti intorno a te">' + s + '</svg><figcaption>Tu sei al centro, il nord è in alto. ' + P.length + ' posti entro ' + C.fmtDist(R) + '.</figcaption></figure>' +
     '<div class="near-list"><div class="chips chips--scroll" role="group" aria-label="Tipo di posto"><button class="chip" data-act="near" data-c="all" aria-pressed="' + (UI.near === 'all') + '">Tutti</button>' + cats.map(function (c) { return '<button class="chip" data-act="near" data-c="' + c + '" aria-pressed="' + (UI.near === c) + '">' + ic(D.PLACES[c].icon) + esc(D.PLACES[c].label) + '</button>'; }).join('') + '</div>' +
@@ -4676,6 +4778,136 @@ ACT['note-del'] = function (el) {
   if (Date.now() - delArmed > 5000) { delArmed = Date.now(); el.lastChild.textContent = 'Sicuro? Tocca ancora per eliminarlo'; return; }
   delArmed = 0; delete S.notes[UI.noteKey]; save(); Sheet.close(); render(); toast('Eliminato');
 };
+
+/* Scaccianoia — interfaccia, parte 5: installare l'app sul dispositivo e passarla a un amico. */
+ICON.share = '<path d="M12 14.500V3.500"/><path d="M8 7.300 12 3.300l4 4"/><path d="M7.500 10.500H6v9.500h12v-9.500h-1.500"/>';
+ICON.phone = '<rect x="7" y="2.800" width="10" height="18.400" rx="2.300"/><path d="M11 18h2"/>';
+ICON.dots = '<circle cx="12" cy="5.300" r="1.400" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.400" fill="currentColor" stroke="none"/><circle cx="12" cy="18.700" r="1.400" fill="currentColor" stroke="none"/>';
+ICON.addbox = '<rect x="4" y="4" width="16" height="16" rx="3.500"/><path d="M12 8.300v7.400M8.300 12h7.400"/>';
+ICON.laptop = '<rect x="5" y="5" width="14" height="9.500" rx="1.500"/><path d="M3 18h18"/>';
+
+var Inst = {
+  ev: null,     // l'invito a installare che arriva da Chrome, Edge e simili: si può usare una volta sola
+  env: function () {
+    function mm(q) { try { return !!(window.matchMedia && window.matchMedia(q).matches); } catch (e) { return false; } }
+    // Aperta da un'app Android (per esempio Spicci, che vive sullo stesso sito)? Lo dice il "da dove arrivi" della prima pagina.
+    var ref = ''; try { ref = sessionStorage.getItem('scaccianoia.arrivo') || ''; } catch (e) {}
+    if (!ref && (document.referrer || '').indexOf('android-app://') === 0) { ref = document.referrer; try { sessionStorage.setItem('scaccianoia.arrivo', ref); } catch (e) {} }
+    return { boxed: Env.boxed, referrer: ref, ua: navigator.userAgent || '', platform: navigator.platform || '', touch: navigator.maxTouchPoints || 0, prompt: !!this.ev, hosts: D.APP.hosts,
+      standalone: mm('(display-mode: standalone)') || mm('(display-mode: fullscreen)') || mm('(display-mode: minimal-ui)') || navigator.standalone === true };
+  },
+  kind: function () { return C.installKind(this.env()); },
+  have: function (k) { return k.k === 'in' || !!S.inst.done; },
+  go: function () {
+    var ev = this.ev; if (!ev) return instSheet();
+    this.ev = null;
+    try { ev.prompt(); } catch (e) { return instSheet(); }
+    if (ev.userChoice && ev.userChoice.then) ev.userChoice.then(function (r) { if (!r || r.outcome !== 'accepted') toast('Va bene. La ritrovi nella sezione Io.'); rerender(); }, function () { rerender(); });
+    else rerender();
+  }
+};
+function appAddr() { return D.APP.url.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+function qrSvg() {
+  var n = D.APP.qr.length, q = 4, w = n + 2 * q;   // quattro moduli chiari tutto intorno: senza, i lettori faticano
+  return '<svg class="qr" viewBox="' + (-q) + ' ' + (-q) + ' ' + w + ' ' + w + '" role="img" aria-label="Codice QR con l\'indirizzo di Scaccianoia" shape-rendering="crispEdges"><rect x="' + (-q) + '" y="' + (-q) + '" width="' + w + '" height="' + w + '" fill="#FFFFFF"/><path d="' + C.qrPath(D.APP.qr) + '" fill="#101A30"/></svg>';
+}
+function instSteps(list) {
+  return '<ol class="inst-steps">' + list.map(function (s) { return '<li><span class="inst-ic">' + ic(s[0]) + '</span><p><b>' + s[1] + '</b>' + (s[2] ? '<span>' + s[2] + '</span>' : '') + '</p></li>'; }).join('') + '</ol>';
+}
+function instAddr() { return '<p class="inst-addr"><span>' + esc(appAddr()).replace('/', '/<wbr>') + '</span><button class="btn btn--line btn--s" data-act="inst-copy">' + ic('copy') + 'Copia</button></p>'; }
+function instQr(text) { return '<div class="inst-qr">' + qrSvg() + '<p>' + text + '</p></div>'; }
+
+/* L'invito in cima alla pagina Oggi. Si chiude con la X e non torna: resta la voce nella sezione Io. */
+function getappCard() {
+  var k = Inst.kind(), t, d, b;
+  if (Inst.have(k) || S.inst.hide) return '';
+  if (k.k === 'box') { t = 'Scaccianoia sul telefono'; d = "Questa è l'anteprima: l'app vera si apre e si installa dal suo indirizzo."; b = 'Come averla'; }
+  else if (k.k === 'host') { t = 'Scaccianoia con la sua icona'; d = 'Adesso la vedi dentro ' + esc(k.app) + ': si può installare come app a sé.'; b = 'Come si fa'; }
+  else if (k.k === 'desk' || (k.k === 'ask' && !k.phone)) { t = 'Portala sul telefono'; d = "Inquadri un codice e la installi come un'app. Gratis, senza store."; b = 'Mostra il codice'; }
+  else { t = 'Installa Scaccianoia'; d = 'Gratis e senza store. Si apre anche senza rete.'; b = k.k === 'ask' ? 'Installa' : 'Come si fa'; }
+  return '<section class="getapp" aria-label="Installare l\'app">' + LOGO + '<div class="getapp-t"><b>' + t + '</b><span>' + d + '</span></div>' +
+    '<button class="btn btn--ink btn--s" data-act="inst">' + b + '</button><button class="getapp-x" data-act="inst-hide" aria-label="Chiudi questo invito">' + ic('x') + '</button></section>';
+}
+
+/* La voce fissa nella sezione Io. */
+function instBlock() {
+  var k = Inst.kind(), have = Inst.have(k), main;
+  main = k.k === 'in' ? '' : '<button class="btn btn--ink" data-act="inst">' + ic('phone') +
+    (have ? 'Come reinstallarla' : k.k === 'ask' && k.phone ? 'Installa' : (k.k === 'desk' || k.k === 'box' || k.k === 'ask') ? 'Portala sul telefono' : 'Come si installa') + '</button>';
+  return '<section class="blk" id="blk-app"><h2>' + (have ? "L'app su questo dispositivo" : "Scarica l'app") + '</h2>' +
+    (have ? '<p class="ok-line">' + ic('check') + (k.k === 'in' ? 'La stai usando come app installata' : 'Risulta installata su questo dispositivo') + '</p>'
+      : '<p class="muted">' + (k.k === 'box' ? "Questa è l'anteprima: l'app da installare sta al suo indirizzo." : 'Gratis, senza passare da uno store: si installa dal browser e si apre anche senza rete.') + '</p>') +
+    '<div class="row-btns">' + main + '<button class="btn btn--line" data-act="inst-friend">' + ic('send') + 'Passala a un amico</button></div></section>';
+}
+
+/* Il foglio con i passaggi giusti per il dispositivo su cui si è. */
+function instSheet() {
+  var k = Inst.kind(), have = Inst.have(k), T = 'Installa Scaccianoia', SUB = "Gratis, senza passare da uno store. Si apre come un'app, anche senza rete.", body = '', qrShown = false;
+  var AND = [['dots', 'Apri il menu del browser', 'I tre puntini in alto a destra.'],
+    ['addbox', 'Scegli «Aggiungi a schermata Home»', k.firefox ? 'In Firefox si chiama «Aggiungi app alla schermata iniziale».' : k.samsung ? "In Samsung Internet l'opzione è nel menu con le tre righe, in basso." : 'Su qualche telefono si chiama «Installa app».'],
+    ['check', 'Tocca «Installa»', "L'icona con il biglietto giallo compare tra le tue app."]];
+  var IOS = [['share', 'Tocca Condividi', 'È il quadrato con la freccia in su, nella barra del browser.'],
+    ['addbox', 'Scegli «Aggiungi alla schermata Home»', "Se non la vedi, scorri l'elenco verso il basso."],
+    ['check', 'Tocca «Aggiungi»', 'Se compare un interruttore per aprirla come app, lascialo acceso.']];
+  if (k.k === 'box') {
+    T = 'Scaccianoia sul telefono'; SUB = "Questa è l'anteprima dentro Claude: da qui non si installa. L'app vera sta a questo indirizzo.";
+    body = instQr('Inquadra il codice con la fotocamera del telefono: si apre Scaccianoia e lì trovi il tasto per installarla.') + instAddr() +
+      '<div class="row-btns inst-go"><a class="btn btn--sun" href="' + esc(D.APP.url) + '" target="_blank" rel="noopener">Apri l\'app' + ic('ext') + '</a></div>'; qrShown = true;
+  } else if (k.k === 'in') {
+    T = 'È già installata'; SUB = 'La stai usando come app: la trovi tra le app di questo dispositivo, con il biglietto giallo come icona.';
+  } else if (k.k === 'host') {
+    T = 'Installala come app a sé'; SUB = "Adesso la stai guardando dentro l'app " + esc(k.app) + ': funziona, ma non ha un\'icona sua.';
+    body = '<div class="row-btns inst-go"><a class="btn btn--sun" href="intent://' + esc(appAddr()) + '/#Intent;scheme=https;package=com.android.chrome;end">Apri in Chrome' + ic('ext') + '</a></div>' + instAddr() +
+      instSteps([['ext', 'Aprila in Chrome', "Con il tasto giallo qui sopra. Se non succede niente, apri Chrome e scrivi l'indirizzo a mano."]].concat(AND));
+  } else if (k.k === 'ask' && k.phone) {
+    body = '<div class="row-btns inst-go"><button class="btn btn--sun btn--l" data-act="inst-go">' + ic('down') + 'Installa adesso</button></div>' +
+      '<p class="muted small">Se non parte: apri il menu del browser e scegli «Aggiungi a schermata Home», poi «Installa».</p>';
+  } else if (k.k === 'ios' || k.k === 'ios-app') {
+    if (k.k === 'ios-app') { SUB = "Questa pagina è aperta dentro un'altra app, che non può installarla. Prima aprila in Safari: copia l'indirizzo e incollalo lì."; body = instAddr(); }
+    body += instSteps(IOS);
+  } else if (k.k === 'and' || k.k === 'and-app') {
+    if (k.k === 'and-app') { SUB = "Questa pagina è aperta dentro un'altra app, che non può installarla. Prima aprila in Chrome: copia l'indirizzo e incollalo lì."; body = instAddr(); }
+    body += instSteps(AND);
+  } else {   // computer
+    T = 'Portala sul telefono'; SUB = 'Inquadra il codice con la fotocamera del telefono: si apre Scaccianoia e lì trovi il tasto per installarla.';
+    body = instQr('Oppure scrivi questo indirizzo nel browser del telefono.') + instAddr() + '<h3 class="sub-h">Su questo computer</h3>' +
+      (k.k === 'ask' ? '<div class="row-btns"><button class="btn btn--line" data-act="inst-go">' + ic('laptop') + 'Installa su questo computer</button></div>'
+        : '<p class="muted">' + (k.safari ? 'In Safari: Condividi, poi «Aggiungi al Dock».' : k.firefox ? 'Firefox sul computer non installa le app dei siti: aprila in Chrome o in Edge.' : "Aprila in Chrome o in Edge: nella barra dell'indirizzo compare il tasto per installarla.") + '</p>');
+    qrShown = true;
+  }
+  if (have && k.k !== 'in' && k.k !== 'box') body = '<p class="ok-line">' + ic('check') + 'Risulta già installata su questo dispositivo</p>' + body;
+  body += '<h3 class="sub-h">Passala a un amico</h3>' + (qrShown ? '' : instQr('Fagli inquadrare questo codice con la fotocamera del telefono.')) +
+    '<div class="row-btns inst-go">' + (navigator.share ? '<button class="btn btn--line btn--s" data-act="inst-share">' + ic('send') + 'Condividi</button>' : '') +
+    '<button class="btn btn--line btn--s" data-act="inst-copy">' + ic('copy') + "Copia l'indirizzo</button></div>";
+  Sheet.open('<div class="inst-top">' + LOGO + '<div><h2>' + T + '</h2><p>' + SUB + '</p></div></div>' + body, { label: 'Installare Scaccianoia', cls: 'sheet--inst' });
+}
+
+ACT.inst = function () { var k = Inst.kind(); if (k.k === 'ask' && k.phone && !Inst.have(k)) Inst.go(); else instSheet(); };
+ACT['inst-go'] = function () { Sheet.close(); Inst.go(); };
+ACT['inst-hide'] = function () { S.inst.hide = C.dayNum(new Date()); save(); render(); toast("Va bene. Per installarla c'è la sezione Io."); };
+ACT['inst-copy'] = function () { copyText(D.APP.url); };
+ACT['inst-share'] = function () {
+  var d = { title: 'Scaccianoia', text: 'Idee gratis contro la noia, scelte in base al meteo e a dove sei.', url: D.APP.url };
+  try { if (navigator.share) { navigator.share(d).catch(function () {}); return; } } catch (e) {}
+  copyText(D.APP.url);
+};
+ACT['inst-friend'] = function () { if (navigator.share && Inst.kind().phone) ACT['inst-share'](); else instSheet(); };
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault(); Inst.ev = e;
+  if (S.inst.done) { S.inst.done = 0; save(); }   // il browser la offre di nuovo: vuol dire che è stata tolta
+  rerender();
+});
+window.addEventListener('appinstalled', function () {
+  Inst.ev = null; S.inst.done = C.dayNum(new Date()); save();
+  if ($('#sheets .sheet--inst')) Sheet.close();
+  toast('Scaccianoia è installata: la trovi tra le tue app'); rerender();
+});
+
+var oggiBase = VIEWS.oggi;
+VIEWS.oggi = function () { var h = oggiBase(), mark = '<div class="dash">', k = h.indexOf(mark); return k < 0 ? h : h.slice(0, k) + getappCard() + h.slice(k); };
+var ioWithAlbum = VIEWS.io;
+VIEWS.io = function () { var h = ioWithAlbum(), mark = '<section class="blk about">', k = h.indexOf(mark); return k < 0 ? h : h.slice(0, k) + instBlock() + h.slice(k); };
 
 start();
 
