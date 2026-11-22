@@ -1,13 +1,20 @@
 {
+  "id": "/scaccianoia/",
   "name": "Scaccianoia",
   "short_name": "Scaccianoia",
-  "description": "Idee gratis contro la noia, scelte in base al meteo e al posto in cui sei.",
+  "description": "Idee gratis contro la noia, scelte in base al meteo, al posto in cui sei e al tempo che hai. Ogni giorno biglietti diversi, ognuno con lo strumento per farlo.",
   "lang": "it",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#E9EFF6",
   "theme_color": "#FFD23F",
+  "categories": [
+    "lifestyle",
+    "entertainment"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icon-192.png",
@@ -24,6 +31,48 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "schermo-1-oggi.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Il cielo di adesso e i biglietti del giorno"
+    },
+    {
+      "src": "schermo-2-biglietto.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Ogni idea ha lo strumento per farla: qui la ricetta del pane"
+    },
+    {
+      "src": "schermo-3-vicino.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "I posti gratuiti intorno a te"
+    },
+    {
+      "src": "schermo-largo.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Scaccianoia su uno schermo grande"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tutte le idee",
+      "short_name": "Idee",
+      "url": "./#idee"
+    },
+    {
+      "name": "Gratis vicino a me",
+      "short_name": "Vicino",
+      "url": "./#vicino"
     }
   ]
 }
