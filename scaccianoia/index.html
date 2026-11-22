@@ -12,9 +12,19 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%23101A30%22%2F%3E%3Cg%20transform%3D%22rotate(-10%2032%2032)%22%3E%3Cpath%20d%3D%22M10%2020h44v8a4%204%200%200%200%200%208v8H10v-8a4%204%200%200%200%200-8z%22%20fill%3D%22%23FFD23F%22%2F%3E%3Cpath%20d%3D%22M41%2021v22%22%20stroke%3D%22%23101A30%22%20stroke-width%3D%221.6%22%20stroke-dasharray%3D%222.5%202.5%22%2F%3E%3Cpath%20d%3D%22M24.5%2025.5l1.9%204.6%204.6%201.9-4.6%201.9-1.9%204.6-1.9-4.6-4.6-1.9%204.6-1.9z%22%20fill%3D%22%23101A30%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta property="og:title" content="Scaccianoia">
-<meta property="og:description" content="Idee gratis contro la noia, scelte in base al meteo, al posto in cui sei e al tempo che hai.">
+<link rel="canonical" href="https://spicci2026.github.io/scaccianoia/">
+<meta property="og:title" content="Scaccianoia: idee gratis contro la noia">
+<meta property="og:description" content="Cose gratis da fare subito, scelte in base al meteo, a dove sei e al tempo che hai.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://spicci2026.github.io/scaccianoia/">
+<meta property="og:site_name" content="Scaccianoia">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://spicci2026.github.io/scaccianoia/anteprima.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un biglietto giallo con la scritta «Ti annoi?» e il timbro «gratis, € 0,00, sempre»">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap">
@@ -772,6 +782,7 @@ h2 + .cam{margin-top:12px}
 .inst-steps p span{font-size:14px;color:var(--ink-2)}
 .inst-go{margin-top:16px}
 .inst-go + .small{margin-top:10px}
+.sheet--inst .sub-h + .inst-go{margin-top:10px}
 .inst-qr{display:grid;grid-template-columns:minmax(0,176px) minmax(0,1fr);gap:16px;align-items:center;margin-top:16px}
 .inst-qr p{margin:0;font-size:15px;line-height:1.4;color:var(--ink-2)}
 .qr{display:block;width:100%;height:auto;border-radius:12px;background:#FFFFFF}
@@ -1113,7 +1124,10 @@ h2 + .cam{margin-top:12px}
 
   /* Dove vive l'app e il codice QR del suo indirizzo (versione 3, correzione M: 29 moduli per lato, 1 = scuro).
      Se l'indirizzo cambia, il codice va rigenerato con tests/qr.py. */
-  var APP = { url: 'https://spicci2026.github.io/scaccianoia/', hosts: { 'it.spicci.app': 'Spicci' }, qr: [
+  var APP = { url: 'https://spicci2026.github.io/scaccianoia/', hosts: { 'it.spicci.app': 'Spicci' },
+    // due righe per presentarla a un amico: sono il messaggio già scritto di «Invia su WhatsApp» e della condivisione del telefono
+    pitch: ['Ti annoi? Prova Scaccianoia \uD83C\uDF9F\uFE0F', 'Ti propone cose gratis da fare subito, scelte in base al meteo, a dove sei e al tempo che hai. Ogni giorno idee diverse.'],
+    pitchEnd: 'Si apre da qui e si può installare sul telefono, senza store:', qr: [
     '11111110001011001111101111111',
     '10000010010111111010001000001',
     '10111010111000010010101011101',
@@ -4807,6 +4821,8 @@ var Inst = {
   }
 };
 function appAddr() { return D.APP.url.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+/* Il collegamento che apre WhatsApp con il messaggio già scritto: chi lo tocca sceglie solo a chi mandarlo. */
+function waLink() { return 'https://wa.me/?text=' + encodeURIComponent(D.APP.pitch.join('\n') + '\n\n' + D.APP.pitchEnd + '\n' + D.APP.url); }
 function qrSvg() {
   var n = D.APP.qr.length, q = 4, w = n + 2 * q;   // quattro moduli chiari tutto intorno: senza, i lettori faticano
   return '<svg class="qr" viewBox="' + (-q) + ' ' + (-q) + ' ' + w + ' ' + w + '" role="img" aria-label="Codice QR con l\'indirizzo di Scaccianoia" shape-rendering="crispEdges"><rect x="' + (-q) + '" y="' + (-q) + '" width="' + w + '" height="' + w + '" fill="#FFFFFF"/><path d="' + C.qrPath(D.APP.qr) + '" fill="#101A30"/></svg>';
@@ -4837,7 +4853,8 @@ function instBlock() {
   return '<section class="blk" id="blk-app"><h2>' + (have ? "L'app su questo dispositivo" : "Scarica l'app") + '</h2>' +
     (have ? '<p class="ok-line">' + ic('check') + (k.k === 'in' ? 'La stai usando come app installata' : 'Risulta installata su questo dispositivo') + '</p>'
       : '<p class="muted">' + (k.k === 'box' ? "Questa è l'anteprima: l'app da installare sta al suo indirizzo." : 'Gratis, senza passare da uno store: si installa dal browser e si apre anche senza rete.') + '</p>') +
-    '<div class="row-btns">' + main + '<button class="btn btn--line" data-act="inst-friend">' + ic('send') + 'Passala a un amico</button></div></section>';
+    '<div class="row-btns">' + main + '<a class="btn btn--line" href="' + esc(waLink()) + '" target="_blank" rel="noopener">' + ic('send') + 'Invia su WhatsApp</a>' +
+    '<button class="btn btn--line" data-act="inst-friend">' + ic('ext') + 'Passala a un amico</button></div></section>';
 }
 
 /* Il foglio con i passaggi giusti per il dispositivo su cui si è. */
@@ -4876,9 +4893,12 @@ function instSheet() {
     qrShown = true;
   }
   if (have && k.k !== 'in' && k.k !== 'box') body = '<p class="ok-line">' + ic('check') + 'Risulta già installata su questo dispositivo</p>' + body;
-  body += '<h3 class="sub-h">Passala a un amico</h3>' + (qrShown ? '' : instQr('Fagli inquadrare questo codice con la fotocamera del telefono.')) +
-    '<div class="row-btns inst-go">' + (navigator.share ? '<button class="btn btn--line btn--s" data-act="inst-share">' + ic('send') + 'Condividi</button>' : '') +
-    '<button class="btn btn--line btn--s" data-act="inst-copy">' + ic('copy') + "Copia l'indirizzo</button></div>";
+  // a un amico: prima i tasti (il messaggio è già scritto), poi il codice per chi è lì accanto
+  body += '<h3 class="sub-h">Passala a un amico</h3>' +
+    '<div class="row-btns inst-go inst-pass"><a class="btn btn--ink btn--s" href="' + esc(waLink()) + '" target="_blank" rel="noopener">' + ic('send') + 'Invia su WhatsApp</a>' +
+    (navigator.share ? '<button class="btn btn--line btn--s" data-act="inst-share">' + ic('ext') + 'Condividi</button>' : '') +
+    '<button class="btn btn--line btn--s" data-act="inst-copy">' + ic('copy') + "Copia l'indirizzo</button></div>" +
+    (qrShown ? '' : instQr('Se è lì con te, fagli inquadrare questo codice con la fotocamera del telefono.'));
   Sheet.open('<div class="inst-top">' + LOGO + '<div><h2>' + T + '</h2><p>' + SUB + '</p></div></div>' + body, { label: 'Installare Scaccianoia', cls: 'sheet--inst' });
 }
 
@@ -4887,7 +4907,7 @@ ACT['inst-go'] = function () { Sheet.close(); Inst.go(); };
 ACT['inst-hide'] = function () { S.inst.hide = C.dayNum(new Date()); save(); render(); toast("Va bene. Per installarla c'è la sezione Io."); };
 ACT['inst-copy'] = function () { copyText(D.APP.url); };
 ACT['inst-share'] = function () {
-  var d = { title: 'Scaccianoia', text: 'Idee gratis contro la noia, scelte in base al meteo e a dove sei.', url: D.APP.url };
+  var d = { title: 'Scaccianoia', text: D.APP.pitch.join('\n'), url: D.APP.url };
   try { if (navigator.share) { navigator.share(d).catch(function () {}); return; } } catch (e) {}
   copyText(D.APP.url);
 };
