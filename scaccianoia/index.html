@@ -1858,8 +1858,11 @@ h2 + .cam{margin-top:12px}
     if (ctx.catW && ctx.catW[a.cat]) s += Math.max(-6, Math.min(8, ctx.catW[a.cat])) * 2;
     if (fl.Z) {
       // stessa scelta dello strumento del biglietto: il punto più alto che si raggiunge nel tempo a disposizione
-      var rel = ctx.reliefAt ? ctx.reliefAt(metaTime(ctx.reliefTime != null ? ctx.reliefTime : ctx.time, a.min)) : ctx.relief;
-      if (rel) { if (rel.flat) return null; s += 10; extra.push("Punto più alto: circa " + roundGain(rel.best.gain) + " metri più su"); }
+      var rel = ctx.reliefAt ? ctx.reliefAt(metaTime(ctx.reliefTime != null ? ctx.reliefTime : ctx.time, a.min, a.max)) : ctx.relief;
+      if (rel) {
+        if (rel.flat) return null;   // in pianura non lo propongo: resta nel catalogo, e aprendolo porta alla vista più aperta
+        if (rel.best.gain >= 30) { s += 10; extra.push("Punto più alto: circa " + roundGain(rel.best.gain) + " metri più su"); }
+      }
     }
     var seen = ctx.shown ? ctx.shown[a.id] : null;
     if (seen != null) { var gone = env.dayNum - seen; if (gone >= 1 && gone < ROT.length) s -= ROT[gone]; }
@@ -1972,6 +1975,13 @@ h2 + .cam{margin-top:12px}
   ];
   var WIKI_SKIP = /^(frazione|comune|quartiere|rione|stazione|strada|autostrada|diocesi|arcidiocesi|squadra|societa|azienda|scuola|liceo|istituto|universita|ospedale|stadio|aeroporto|circoscrizione|localita|collegio|centro abitato|municipio|ferrovia|linea|tranvia|metropolitana|battaglia|assedio|terremoto|incidente|strage|alluvione|ex comune|suddivisione|zona|borgata|contrada|sestiere|evento|festival|manifestazione)\b/;
   function wikiKind(text) { for (var i = 0; i < WIKI_KIND.length; i++) if (WIKI_KIND[i][0].test(text)) return WIKI_KIND[i]; return null; }
+  // «Uso (fiume)» diventa «Fiume Uso»: un nome corto, da solo, non dice che cos'è.
+  var WIKI_PRE = /^(fiume|torrente|lago|canale|rio|monte|colle)$/;
+  function wikiName(title, head) {
+    var m = /\s*\(([^)]*)\)\s*$/.exec(title), base = title.replace(/\s*\([^)]*\)\s*$/, ''), w = m ? norm(m[1]) : '', h = head.split(' ')[0] || '';
+    var pre = WIKI_PRE.test(w) ? w : (WIKI_PRE.test(h) && base.split(' ').length <= 2 && norm(base).indexOf(h) < 0 ? h : '');
+    return ((pre ? pre.charAt(0).toUpperCase() + pre.slice(1) + ' ' : '') + base).slice(0, 70);
+  }
   function parseWiki(json, lat, lon) {
     var pages = (json && json.query && json.query.pages) || {}, out = [];
     Object.keys(pages).forEach(function (k) {
@@ -1979,7 +1989,7 @@ h2 + .cam{margin-top:12px}
       var desc = norm(p.description || ''), head = desc.split(' ').slice(0, 4).join(' ');
       if (WIKI_SKIP.test(head)) return;
       var kind = wikiKind(norm(p.title)) || wikiKind(head); if (!kind) return;
-      out.push({ id: 'k' + p.pageid, cat: kind[1], name: String(p.title).replace(/\s*\([^)]*\)\s*$/, '').slice(0, 70), named: true, lat: co.lat, lon: co.lon,
+      out.push({ id: 'k' + p.pageid, cat: kind[1], name: wikiName(String(p.title), head), named: true, lat: co.lat, lon: co.lon,
         d: dist(lat, lon, co.lat, co.lon), b: bearing(lat, lon, co.lat, co.lon), fee: null, wiki: String(p.title), desc: p.description ? String(p.description).slice(0, 110) : '', sub: kind[2] });
     });
     out.sort(function (a, b) { return a.d - b.d; });
@@ -2036,10 +2046,15 @@ h2 + .cam{margin-top:12px}
   function climbMin(d, gain) { return d * 1.25 / 75 + Math.max(0, gain) / 10; }
   function tripMin(d, gain) { return Math.round(climbMin(d, gain) + d * 1.25 / 75 + 5); }
   function reachMeters(T) { return Math.max(150, Math.round((T - 5) / 2 * 60)); }
-  // Tempo, tra andata e ritorno, su cui ragiona una meta a piedi: quello scelto dalla persona, mai meno della durata dell'idea.
-function metaTime(time, min) { var t = Math.max(time || 30, min || 0), o = [30, 60, 120, 240]; for (var i = 0; i < o.length; i++) if (o[i] >= t) return o[i]; return 240; }
-function roundGain(g) { return g >= 30 ? Math.round(g / 10) * 10 : Math.max(5, Math.round(g / 5) * 5); }
-function highPick(pts, T) {
+  // Tempo, tra andata e ritorno, su cui ragiona una meta a piedi: quello scelto dalla persona, dentro la durata dell'idea.
+  function metaTime(time, min, max) {
+    var t = Math.max(time || 30, min || 0), o = [30, 60, 120, 240];
+    if (max) t = Math.min(t, Math.max(max, min || 0));   // un'idea da due ore non propone una camminata da quattro
+    for (var i = 0; i < o.length; i++) if (o[i] >= t) return o[i];
+    return 240;
+  }
+  function roundGain(g) { return g >= 30 ? Math.round(g / 10) * 10 : Math.max(5, Math.round(g / 5) * 5); }
+  function highPick(pts, T) {
     if (!pts || !pts.length || typeof pts[0].ele !== 'number') return null;
     var base = pts[0].ele, best = null, sea = null, i, p, gain, tot;
     function wet(q) { return typeof q.ele === 'number' && q.ele <= 0; }
@@ -4012,6 +4027,10 @@ var CAMT = {
   shot: { ic: 'camera', t: 'Scatta la foto', hint: 'Con la fotocamera' },
   pair: { ic: 'camera', t: 'Prima e dopo', hint: 'Con le foto prima e dopo' }
 };
+// Senza fotocamera dal vivo: sul telefono si apre quella di sistema, sul computer si scelgono le foto già fatte.
+var COARSE = (function () { try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } })();
+function camFileName() { return COARSE ? 'Fotocamera del telefono' : 'Scegli le foto'; }
+function camFile(i) { return '<label class="chip cam-file">' + ic('camera') + camFileName() + '<input type="file" accept="image/*" ' + (COARSE ? 'capture="environment" ' : 'multiple ') + kI(i, 'file') + '></label>'; }
 TOOL.cam = {
   hint: function (o) { var m = CAMT[o.mode]; return [m.ic, m.hint]; },
   need: function (o) { return o.mode === 'stop' ? (o.n || 20) : o.mode === 'pair' ? 2 : o.mode === 'shot' ? 1 : (o.n || 6); },
@@ -4038,7 +4057,7 @@ TOOL.cam = {
       '<button class="shut" ' + kA(i, 'shot') + ' aria-label="Scatta una foto"><span></span></button>' +
       '<button class="rnd rnd--yes" ' + kA(i, 'cnext') + ' aria-label="' + (stop ? 'Guarda il cartone animato' : 'Ho finito di scattare') + '"' + (n >= (stop ? 2 : 1) ? '' : ' disabled') + '>' + ic(stop ? 'go' : 'check') + '</button></div>' +
       '<div class="cam-opt">' + (stop ? '<button class="chip" ' + kA(i, 'onion') + ' aria-pressed="' + !!st.onion + '">' + ic('layers') + 'Velina</button><button class="chip" ' + kA(i, 'auto') + ' aria-pressed="' + !!st.auto + '">' + ic('timer') + 'Scatta ogni 3 secondi</button>' : '') +
-      '<button class="chip" ' + kA(i, 'face') + ' aria-label="Passa alla fotocamera davanti o dietro">' + ic('refresh') + 'Gira</button><label class="chip cam-file">' + ic('camera') + 'Fotocamera del telefono<input type="file" accept="image/*" capture="environment" ' + kI(i, 'file') + '></label></div>' +
+      '<button class="chip" ' + kA(i, 'face') + ' aria-label="Passa alla fotocamera davanti o dietro">' + ic('refresh') + 'Gira</button>' + camFile(i) + '</div>' +
       (stop ? "<p class=\"muted small\">La velina mostra in trasparenza la foto di prima: sposta l'oggetto di poco e scatta. Il tasto giallo fa partire il cartone.</p>" : '') +
       '<ol class="cam-strip" id="cam-s" aria-label="Foto scattate">' + st.fr.map(function (f, k) { return '<li><img src="' + f.url + '" alt="Foto ' + (k + 1) + '"></li>'; }).join('') + '</ol></div>';
   },
@@ -4078,9 +4097,10 @@ TOOL.cam = {
     }, function (e) { self.fail(st, e && e.name); });
   },
   fail: function (st, name) {
-    st.err = Env.boxed ? "In questa anteprima la fotocamera dal vivo è bloccata. Usa «Fotocamera del telefono» qui sotto, oppure apri l'app nel browser."
-      : (name === 'NotAllowedError' || name === 'SecurityError') ? "Non ho il permesso di usare la fotocamera. Puoi darlo dalle impostazioni del browser, oppure usare «Fotocamera del telefono» qui sotto."
-        : "Non riesco ad aprire la fotocamera dal vivo. Usa «Fotocamera del telefono» qui sotto.";
+    var alt = '«' + camFileName() + '»';
+    st.err = Env.boxed ? "In questa anteprima la fotocamera dal vivo è bloccata. Usa " + alt + " qui sotto, oppure apri l'app nel browser."
+      : (name === 'NotAllowedError' || name === 'SecurityError') ? "Non ho il permesso di usare la fotocamera. Puoi darlo dalle impostazioni del browser, oppure usare " + alt + " qui sotto."
+        : "Non riesco ad aprire la fotocamera dal vivo. Usa " + alt + " qui sotto.";
     var m = $('#cam-m'); if (m) { m.hidden = false; m.textContent = st.err; }
   },
   stopCam: function (st) {
@@ -4225,9 +4245,16 @@ TOOL.cam = {
   },
   inp: {
     file: function (el, o, st, i, a) {
-      var f = el.files && el.files[0]; if (!f) return; var u = URL.createObjectURL(f);
-      loadImg(u).then(function (im) { return TOOL.cam.add(o, st, i, a, im, im.naturalWidth, im.naturalHeight); }).catch(function () { toast('Non riesco a leggere questa foto.', 'warn'); })
-        .then(function () { URL.revokeObjectURL(u); try { el.value = ''; } catch (e) {} });
+      var fs = Array.prototype.slice.call(el.files || []), p = Promise.resolve(), bad = 0; if (!fs.length) return;
+      fs.sort(function (x, y) { return x.name < y.name ? -1 : x.name > y.name ? 1 : 0; });   // dal computer se ne scelgono tante: in ordine di nome
+      fs.slice(0, 60).forEach(function (f) {
+        p = p.then(function () {
+          if (Kit.a !== a || st.v !== 'shoot') return;
+          var u = URL.createObjectURL(f);
+          return loadImg(u).then(function (im) { return TOOL.cam.add(o, st, i, a, im, im.naturalWidth, im.naturalHeight); }).catch(function () { bad++; }).then(function () { URL.revokeObjectURL(u); });
+        });
+      });
+      p.then(function () { if (bad) toast(bad === 1 ? 'Non riesco a leggere una foto.' : 'Non riesco a leggere ' + bad + ' foto.', 'warn'); try { el.value = ''; } catch (e) {} });
     }
   },
   leave: function (o, st, i, backOnly) {
@@ -4358,7 +4385,7 @@ function whenPlaces() {
 TOOL.meta = {
   hint: function (o) { return ['route', o.kind === 'alto' ? 'Trova la meta e apre il percorso' : 'Con la meta e il percorso']; },
   timed: function (o) { return o.kind === 'alto' || o.kind === 'new' || o.kind === 'acqua' || o.kind === 'ovest'; },
-  time: function (a) { return C.metaTime(S.prefs.time, a.min); },
+  time: function (a) { return C.metaTime(S.prefs.time, a.min, a.max); },
   card: function (o, st, i, a) {
     var h = kbHead('route', o.t || 'La meta', o.d || ''), M = META[o.kind], T = st.T || this.time(a);
     if (!S.loc) return h + '<p class="muted">Per scegliere la meta mi serve sapere dove sei.</p><div class="row-btns"><button class="btn btn--ink btn--s" data-act="gps">' + ic('pin') + 'Usa la mia posizione</button><button class="btn btn--line btn--s" data-act="loc-open">Scelgo la città</button></div>';
@@ -4370,9 +4397,9 @@ TOOL.meta = {
     return h;
   },
   dest: function (o, st, i) {
-    var d = st.list[st.k % st.list.length], T = st.T, gain = d.gain || 0, up = Math.max(1, Math.round(C.climbMin(d.d, gain))), trip = C.tripMin(d.d, gain);
+    var d = st.list[st.k % st.list.length], T = st.T, gain = d.gain || 0, up = Math.max(1, Math.round(C.climbMin(d.d, gain))), trip = C.tripMin(d.d, gain), steep = gain >= 10 && gain / Math.max(1, d.d) >= 0.03;
     var h = '<div class="mt"><p class="mt-k">' + esc(d.kind || 'La meta') + '</p><p class="mt-n">' + esc(d.name) + '</p>' + (d.desc ? '<p class="mt-d">' + esc(cap(d.desc)) + (/[.!?]$/.test(d.desc) ? '' : '.') + '</p>' : '') +
-      '<p class="mt-l">A <b>' + C.fmtDist(d.d) + '</b> ' + verso(d.b) + (gain >= 10 ? ', <b>' + Math.round(gain) + ' metri</b> più in alto di dove sei' : '') + '. Circa <b>' + up + (up === 1 ? ' minuto' : ' minuti') + '</b> ' + (gain >= 10 ? 'di salita' : 'a piedi') + ', ' + trip + ' tra andata e ritorno.</p>';
+      '<p class="mt-l">A <b>' + C.fmtDist(d.d) + '</b> ' + verso(d.b) + (gain >= 10 ? ', <b>' + Math.round(gain) + ' metri</b> più in alto di dove sei' : '') + '. Circa <b>' + up + (up === 1 ? ' minuto' : ' minuti') + '</b> ' + (steep ? 'di salita' : 'a piedi') + ', ' + trip + ' tra andata e ritorno.</p>';
     if (st.note) h += '<p class="mt-x">' + esc(st.note) + '</p>';
     if (this.timed(o) && trip > T) h += '<p class="note">' + ic('alert') + 'Con ' + C.fmtDur(T) + ' è stretta: metti in conto ' + C.fmtDur(Math.ceil(trip / 5) * 5) + '.</p>';
     return h + '<div class="row-btns"><a class="btn btn--sun" href="' + esc(mapsDir(d)) + '" target="_blank" rel="noopener">' + ic('route') + 'Apri il percorso in Maps</a>' +
@@ -4413,17 +4440,20 @@ TOOL.meta = {
       if (!hp || !hp.best) return done(near);
       if (hp.flat) {
         list = near.slice(0, 3);
-        if (hp.sea) list.push({ name: 'La riva del mare', lat: hp.sea.lat, lon: hp.sea.lon, d: hp.sea.d, b: hp.sea.b, kind: "L'orizzonte più aperto", desc: 'in pianura la vista più lunga è quella sul mare' });
+        if (hp.sea) list.push(self.shore(hp));
         if (!list.length) list.push({ name: 'Il punto più alto qui intorno', lat: hp.best.lat, lon: hp.best.lon, d: hp.best.d, b: hp.best.b, gain: hp.best.gain, kind: 'La meta', desc: 'una salita vera qui non esiste: vale come passeggiata' });
         return done(list, 'Qui intorno il terreno è quasi piatto: il punto più alto che raggiungi a piedi è appena ' + Math.max(0, Math.round(hp.best.gain)) + ' metri sopra di te.');
       }
       return self.refine(hp.best, T).then(function (best) { return self.nameIt(best, near); }).then(function (best) {
-        var alt = self.second(T, best), out = [best].concat(alt ? [alt] : []);
+        var alt = self.second(T, best), out = [best].concat(alt ? [alt] : []), low = best.gain < 30;
+        if (low && hp.sea) out.push(self.shore(hp));
         near.forEach(function (p) { if (C.dist(p.lat, p.lon, best.lat, best.lon) > 250) out.push(p); });
-        done(out.slice(0, 4));
+        out = out.slice(0, 4);
+        done(out, low ? 'Da queste parti è quasi tutta pianura: più in alto di così, a piedi, non si arriva.' + (out.length > 1 ? " Con «Un'altra meta» ti propongo un'alternativa." : '') : '');
       });
     }).catch(function () { done([]); });
   },
+  shore: function (hp) { return { name: 'La riva del mare', lat: hp.sea.lat, lon: hp.sea.lon, d: hp.sea.d, b: hp.sea.b, kind: "L'orizzonte più aperto", desc: 'in pianura la vista più lunga è quella sul mare' }; },
   refine: function (best, T) {
     var loc = S.loc, base = UI.relief.near[0].ele;
     return fetchEle(C.boxGrid(best.lat, best.lon, 70, 2)).then(function (pts) {
@@ -4439,7 +4469,7 @@ TOOL.meta = {
     if (P) { d.name = 'Sopra ' + P.name; return Promise.resolve(d); }
     return getJSON('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + best.lat.toFixed(5) + '&lon=' + best.lon.toFixed(5) + '&zoom=17&accept-language=it', 7000).then(function (j) {
       var ad = (j && j.address) || {}, road = ad.road || ad.pedestrian || ad.footway || ad.path || ad.hamlet || ad.suburb || ad.neighbourhood;
-      if (road) d.name = 'In cima, dalle parti di ' + txt(road, 46); return d;
+      if (road) d.name = (best.gain >= 30 ? 'In cima, dalle parti di ' : 'Il punto più alto, dalle parti di ') + txt(road, 46); return d;
     }).catch(function () { return d; });
   },
   second: function (T, best) {
